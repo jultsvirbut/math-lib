@@ -58,3 +58,31 @@ echo "<tr><td align='right' style='border-bottom: 1px solid #222;'>{$s2}</td></t
 echo "<tr><td align='right'>{$sum_num}</td></tr>";
    
 echo '</table>';
+
+
+$lelements = [];
+$elements = [];
+
+for($i = $s1_len - 1, $j = $s2_len - 1; $i >= 0; $i--, $j--){
+	 	
+		$lelements = [$s1{$i}, $s2{$j}, $sum[$i]];
+		$n = mt_rand(0, 2);
+		$lelements[$n] = '*';
+		$elements[] = $lelements;
+
+    };
+print_r($elements);
+
+	$reversed_elements = array_reverse($elements);
+   
+    foreach ($reversed_elements as $lelements) {
+    	echo $lelements[0];
+    }
+    echo '<pre>';
+    foreach ($reversed_elements as $lelements) {
+    	echo $lelements[1];
+    }
+    echo '<pre>';
+    foreach ($reversed_elements as $lelements) {
+    	echo $lelements[2];
+    }
