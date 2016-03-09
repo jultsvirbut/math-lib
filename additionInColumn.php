@@ -64,7 +64,7 @@ echo '</table>';
 
 $lelements = [];
 $elements = [];
-
+$solutions = [];
 
 
 for($i = $s1_len - 1, $j = $s2_len - 1; $j >= 0; $i--, $j--){
@@ -75,65 +75,58 @@ for($i = $s1_len - 1, $j = $s2_len - 1; $j >= 0; $i--, $j--){
 	$lelements[$n] = '*';
 	$elements[] = $lelements;
 
+	$stars = $i + 1;
+
 	if ($n == 2) {
 		
 		$lsum = $s1{$i} + $s2{$j} + $k_mas[$i]; 
 
-		if ($k_mas[$i] == 0) {
-			echo '<pre>'; 
-			echo $i + 1 . ' звездочка: ';
-			echo $s1{$i} . ' + ' . $s2{$j} . ' = ' . $lsum;
+		if ($k_mas[$i] == 0) {		
+			$interim_solution = "{$stars} звездочка: {$s1{$i}} + {$s2{$j}} = $lsum";	
 		} else {
-				echo '<pre>'; 
-				echo $i + 1 . ' звездочка: ';
-				echo $s1{$i} . ' + ' . $s2{$j} . ' + ' . $k_mas[$i] . ' = ' . $lsum;
-			}
+			$interim_solution = "{$stars} звездочка: {$s1{$i}} + {$s2{$j}} + $k_mas[$i] = $lsum" . " (добавили единицу с предыдущего шага)";
+		}
 
 		if ($lsum >= 10) {
-			echo ' записываем в сумму количество единиц ' . $sum[$i] . ' и запоминаем единицу для следующего старшего разряда ';
-		}
+			$solutions[$j] =  $interim_solution . " - записываем в сумму количество единиц {$sum[$i]} и запоминаем единицу для следующего старшего разряда";
+		} else  $solutions[$j] = $interim_solution;
+
+
 
 	} else {
 
 		if ($sum[$i] >= $lelements[(1 + $n)%2] + $k_mas[$i]) {
-			echo '<pre>'; 
-			echo $i + 1 . ' звездочка: ';
+
 			$ls12 = $sum[$i] - $lelements[(1 + $n)%2] - $k_mas[$i];
 
 			if ($k_mas[$i] == 0) {
-
-				echo $sum[$i] . ' - ' . $lelements[(1 + $n)%2] . ' = ' . $ls12;
+				$interim_solution = "{$stars} звездочка: {$sum[$i]} - {$lelements[(1 + $n)%2]} = $ls12";	
 			} else {
-
-				echo $sum[$i] . ' - ' . $lelements[(1 + $n)%2] . ' - ' . $k_mas[$i] . ' = ' . $ls12;
-				}
+				$interim_solution = "{$stars} звездочка: {$sum[$i]} - {$lelements[(1 + $n)%2]} - $k_mas[$i] = $ls12" . " (отняли единицу с предыдущего шага)";
+			}
 
 		} else {
 
 			$lsum = '1' . $sum[$i];
-			echo '<pre>'; 
-			echo $i + 1 . ' звездочка: ';
-			echo 'Так как ' . $sum[$i] . ' меньше ' . $lelements[(1 + $n)%2] . ', берем ' . $lsum . ' и запоминаем единицу для следующего старшего разряда ';
+
+			$interim_solution = "{$stars} звездочка: Так как {$sum[$i]} меньше {$lelements[(1 + $n)%2]}, берем {$lsum} и запоминаем единицу для следующего старшего разряда";		
+
+			$ls12 = $lsum - $lelements[(1 + $n)%2] - $k_mas[$i];
 			
 			if ($k_mas[$i] == 0) {
-
-				echo $lsum . ' - ' . $lelements[(1 + $n)%2] . ' = ';
+				$interim_solution = $interim_solution . " {$lsum} - {$lelements[(1 + $n)%2]} = {$ls12}";
 			} else {
-
-					echo $lsum . ' - ' . $lelements[(1 + $n)%2] . ' - ' . $k_mas[$i] . ' = ';
-				}
-
-			echo $lsum - $lelements[(1 + $n)%2] - $k_mas[$i];
-			if ($lsum - $lelements[(1 + $n)%2] - $k_mas[$i] >= 10) {
-				echo ' - записываем в cлагаемое количество единиц ' . ($lsum - $lelements[(1 + $n)%2] - $k_mas[$i])%10 . ' и запоминаем единицу для следующего старшего разряда ';
+				$interim_solution = $interim_solution . " {$lsum} - {$lelements[(1 + $n)%2]} - $k_mas[$i] = {$ls12}" . " (отняли единицу с предыдущего шага)";
 			}
 		}
 
+		$solutions[$j] = $interim_solution;
+
 	}
 
-
-
-
+	echo '<pre>';
+	print_r($solutions[$j]);
+	echo '</pre>';
 };
 
 
