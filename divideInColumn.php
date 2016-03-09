@@ -2,6 +2,8 @@
 	$divident = (string) mt_rand(10,9999);
 	$divider = (string) mt_rand(2,99);
 
+	echo $divident . " : " . $divider;
+
 	$div_length = strlen($divider);
 	
 	$steps = [];
@@ -25,3 +27,11 @@
 		print_r($step);
 
 	}
+
+	foreach ($steps as $step) {
+			echo $step['result'];
+		}	
+
+
+
+		
