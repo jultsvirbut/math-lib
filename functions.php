@@ -91,3 +91,29 @@ function shuffle_with_save_keys($arr){
 $arr = shuffle_with_save_keys($arr);
 echo '<pre>';
 print_r($arr);
+
+
+
+/* Преобразует целое число number в десятичное, с countNumberAfterComma знаками после запятой */
+function intToFloat($number, $countNumberAfterComma){
+
+    $number = (string) $number;
+    $numberLen = strlen($number);
+
+    $newNumber = '';
+
+    if($countNumberAfterComma >= $numberLen) {
+        $countZero = $countNumberAfterComma - $numberLen;
+        $newNumber = '0,'.str_repeat('0', $countZero > 0 ? $countZero - 1 : $countZero).$number;
+    }
+    else {
+        for($i = $numberLen - 1, $k = 1; $i >= 0; $i--, $k++){
+            $newNumber .= $number{$i};
+            if($k == $countNumberAfterComma) $newNumber .= ',';
+        }
+        
+        $newNumber = strrev($newNumber);
+    }
+
+    return $newNumber;
+}

@@ -6,7 +6,7 @@
 
 	$div_length = strlen($divider);
 	
-	$steps = [];
+	$steps = array ();
 
 	$ldivident = substr($divident, 0, $div_length);
 	$ldivider = $divider;

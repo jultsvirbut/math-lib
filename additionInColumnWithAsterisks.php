@@ -46,7 +46,7 @@ $k_mas[$s1_len - 1] = 0;
 };
 
 
-/* Вывод самого столбика */
+/* Вывод самого столбика. Не выводить 0 в k_mas! */
 function printAdditionInColumn ($a, $b, $sum, $k_mas) {
 
     $s1 = (string) max($a, $b);
@@ -103,7 +103,7 @@ $elements = $solutions = array();
         $lelements[$n] = '*';
         $elements[] = $lelements;
 
-        $stars = $i + 1;
+        $stars = $j + 1;
 
         if ($n == 2) {
             

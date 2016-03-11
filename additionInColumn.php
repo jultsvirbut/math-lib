@@ -5,7 +5,7 @@ $b = mt_rand(10,9999999);
 
 echo $a, ' + ', $b, ' = ', $a + $b;
 
-/* Создает и возвращает string итоговую сумму sum и массив коэффициентов k_mas. 
+/* Создает и возвращает string сумму sum чисел a и b и массив коэффициентов k_mas. 
 Массив k_mas содержит коэффициенты 0 или 1, для каждой цифры числа a. */
 
 function additionInColumn ($a, $b) {
@@ -45,8 +45,7 @@ $k_mas[$s1_len - 1] = 0;
     return array('sum' => $sum, 'k_mas' => $k_mas);
 };
 
-
-/* Вывод самого столбика */
+/* Вывод самого столбика. Не выводить 0 в k_mas!*/
 function printAdditionInColumn ($a, $b, $sum, $k_mas) {
 
     $s1 = (string) max($a, $b);
@@ -67,8 +66,6 @@ function printAdditionInColumn ($a, $b, $sum, $k_mas) {
     echo '</table>';
 
 };
-
-
 
 $results = additionInColumn($a, $b);
 printAdditionInColumn ($a, $b, $results['sum'], $results['k_mas']);
