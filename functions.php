@@ -104,7 +104,7 @@ function intToFloat($number, $countNumberAfterComma){
 
     if($countNumberAfterComma >= $numberLen) {
         $countZero = $countNumberAfterComma - $numberLen;
-        $newNumber = '0,'.str_repeat('0', $countZero > 0 ? $countZero - 1 : $countZero).$number;
+        $newNumber = '0,'.str_repeat('0', $countZero).$number;
     }
     else {
         for($i = $numberLen - 1, $k = 1; $i >= 0; $i--, $k++){
@@ -117,3 +117,6 @@ function intToFloat($number, $countNumberAfterComma){
 
     return $newNumber;
 }
+
+
+

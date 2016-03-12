@@ -1,9 +1,29 @@
 <?php
 
-$a = mt_rand(10,9999999);
-$b = mt_rand(10,9999999);
 
-echo $a, ' - ', $b, ' = ', $a - $b;
+/* Преобразует целое число number в десятичное, с countNumberAfterComma знаками после запятой */
+function intToFloat($number, $countNumberAfterComma){
+
+    $number = (string) $number;
+    $numberLen = strlen($number);
+
+    $newNumber = '';
+
+    if($countNumberAfterComma >= $numberLen) {
+        $countZero = $countNumberAfterComma - $numberLen;
+        $newNumber = '0.'.str_repeat('0', $countZero).$number;
+    }
+    else {
+        for($i = $numberLen - 1, $k = 1; $i >= 0; $i--, $k++){
+            $newNumber .= $number{$i};
+            if($k == $countNumberAfterComma) $newNumber .= '.';
+        }
+        
+        $newNumber = strrev($newNumber);
+    }
+
+    return $newNumber;
+}
 
 /* Создает и возвращает string разность sub двух чисел a и b и массив коэффициентов k_mas. 
 Массив k_mas содержит коэффициенты 0 или 1, для каждой цифры числа a. */
@@ -51,7 +71,6 @@ function subtractionInColumn ($a, $b) {
 
 	return array('sub' => $sub, 'k_mas' => $k_mas);
 };
-
 /* Вывод самого столбика. Не выводить 0 в k_mas! */
 function printSubtractionInColumn ($a, $b, $sub, $k_mas) {
 
@@ -78,5 +97,54 @@ function printSubtractionInColumn ($a, $b, $sub, $k_mas) {
 };
 
 
-$results = subtractionInColumn($a, $b);
-printSubtractionInColumn ($a, $b, $results['sub'], $results['k_mas']);
+
+
+
+
+$a0 = mt_rand(10,9999);
+$b0 = mt_rand(10,9999);
+
+
+$i0 = mt_rand(0, 6);
+$j0 = mt_rand(0, 6);
+
+
+$a1 = intToFloat($a0, $i0);
+$b1 = intToFloat($b0, $j0);
+
+
+if ($a1 < $b1) {
+	$a = $b1; $i = $j0;
+	$b = $a1; $j = $i0;
+} else {
+	$a = $a1; $i = $i0;
+	$b = $b1; $j = $j0;
+}
+
+
+echo '<pre>';
+echo $a, ' - ', $b, ' = ', $a - $b;
+
+$num_zero = $i - $j;
+
+if($num_zero > 0) {
+	if ($j == 0) $b = $b.'.';
+	$b_zero = $b.str_repeat('0', $num_zero);
+	$a_zero = $a;
+} else {
+	$num_zero = abs($num_zero);
+	if ($i == 0) $a = $a.'.';
+	$a_zero = $a.str_repeat('0', $num_zero);
+	$b_zero = $b;
+}
+
+echo '<pre>';
+echo $a_zero, ' - ', $b_zero, ' = ', $a - $b;
+
+
+$results = subtractionInColumn($a_zero*pow(10, max($i, $j)), $b_zero*pow(10, max($i, $j)));
+
+$results['sub'] = intToFloat($results['sub'], max($i, $j));
+array_splice( $results['k_mas'], count($results['k_mas']) - max($i, $j), 0, ' ' );
+
+printSubtractionInColumn ($a_zero, $b_zero, $results['sub'], $results['k_mas']);
