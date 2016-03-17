@@ -11,12 +11,12 @@ function intToFloat($number, $countNumberAfterComma){
 
     if($countNumberAfterComma >= $numberLen) {
         $countZero = $countNumberAfterComma - $numberLen;
-        $newNumber = '0,'.str_repeat('0', $countZero).$number;
+        $newNumber = '0.'.str_repeat('0', $countZero).$number;
     }
     else {
         for($i = $numberLen - 1, $k = 1; $i >= 0; $i--, $k++){
             $newNumber .= $number{$i};
-            if($k == $countNumberAfterComma) $newNumber .= ',';
+            if($k == $countNumberAfterComma) $newNumber .= '.';
         }
         
         $newNumber = strrev($newNumber);
@@ -81,7 +81,7 @@ function printAdditionInColumn ($a, $b, $sum, $k_mas) {
     echo '<pre>';
     $str = str_repeat(' ', $s1_len);
     $str = '';
-    echo '<table width="50px">';
+    echo '<table width="80px">';
     echo "<tr><td align='right'>{$k_num}</td></tr>";
     echo "<tr><td align='right'>{$s1}</td></tr>";
     echo "<tr><td align='right' style='border-bottom: 1px solid #222;'>{$s2}</td></tr>"; 
@@ -179,10 +179,12 @@ $elements = $solutions = array();
 
 function printAdditionInColumnWithAsterisks ($a, $b, $sum) {
 
+
+
     echo '<pre>';
     $str = str_repeat(' ', strlen($a));
     $str = '';
-    echo '<table width="50px">';
+    echo '<table width="80px">';
     echo "<tr><td align='right'>{$a}</td></tr>";
     echo "<tr><td align='right' style='border-bottom: 1px solid #222;'>{$b}</td></tr>"; 
     echo "<tr><td align='right'>{$sum}</td></tr>";  
@@ -191,10 +193,10 @@ function printAdditionInColumnWithAsterisks ($a, $b, $sum) {
 };
 
 
-$a0 = mt_rand(10,9999999);
-$b0 = mt_rand(10,9999999);
+$a0 = mt_rand(10,9999);
+$b0 = mt_rand(10,9999);
 
-$j = mt_rand(0, 8);
+$j = mt_rand(0, 6);
 $i = $j + 2;
 
 $a = intToFloat($a0, $i);
@@ -202,19 +204,30 @@ $b = intToFloat($b0, $j);
 
 echo $a, ' + ', $b, ' = ', $a + $b;
 if ($j == 0){
-    $b  = $b.',';
+    $b  = $b.'.';
     $b_zero = $b.str_repeat('0', 2);
 } else $b_zero = $b.str_repeat('0', 2);
 
 
 $resAddition = additionInColumn($a*pow(10, $i), $b_zero*pow(10, $i));
+
+echo '<pre>';
+echo $a*pow(10, $i), '  ', $b_zero*pow(10, $i), '  ',  $resAddition['sum'];
+
 $resAdditionAsterisks = additionInColumnWithAsterisks($a*pow(10, $i), $b_zero*pow(10, $i), $resAddition['sum'], $resAddition['k_mas']);
+echo '<pre>';
+echo $resAdditionAsterisks['a'], ' ', $resAdditionAsterisks['b'], '  ', $resAdditionAsterisks['sum'];
 
 $resAddition['sum'] = intToFloat($resAddition['sum'], $i);
 array_splice( $resAddition['k_mas'], count($resAddition['k_mas']) - $i, 0, ' ' );
 
 printAdditionInColumn ($a, $b_zero, $resAddition['sum'], $resAddition['k_mas']);
 
+$resAdditionAsterisks['a'] = intToFloat($resAdditionAsterisks['a'], $i);
+$resAdditionAsterisks['b'] = intToFloat($resAdditionAsterisks['b'], $i);
+$resAdditionAsterisks['sum'] = intToFloat($resAdditionAsterisks['sum'], $i);
+echo '<pre>';
+echo $resAdditionAsterisks['a'], ' ', $resAdditionAsterisks['b'], '  ', $resAdditionAsterisks['sum'];
 printAdditionInColumnWithAsterisks ($resAdditionAsterisks['a'], $resAdditionAsterisks['b'], $resAdditionAsterisks['sum']);
 
 

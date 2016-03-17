@@ -99,24 +99,72 @@ function intToFloat($number, $countNumberAfterComma){
 
     $number = (string) $number;
     $numberLen = strlen($number);
-
     $newNumber = '';
 
     if($countNumberAfterComma >= $numberLen) {
         $countZero = $countNumberAfterComma - $numberLen;
-        $newNumber = '0,'.str_repeat('0', $countZero).$number;
+        $newNumber = '0.'.str_repeat('0', $countZero).$number;
     }
     else {
         for($i = $numberLen - 1, $k = 1; $i >= 0; $i--, $k++){
             $newNumber .= $number{$i};
-            if($k == $countNumberAfterComma) $newNumber .= ',';
+            if($k == $countNumberAfterComma) $newNumber .= '.';
         }
         
         $newNumber = strrev($newNumber);
     }
-
     return $newNumber;
 }
 
 
+/* Обрезает нули в десятичных числах */
+function cutZeroDecimal($decimal) {
+    while($decimal{strlen($decimal) -1} == '0') {
+        $decimal = substr($decimal, 0, -1);
+    }
+    if ($decimal{strlen($decimal) -1} == '.') $decimal = substr($decimal, 0, -1);
+    return $decimal;
+}
+
+
+/* Генерирует пару "подходящих друг к другу" чисел для суммы. Например 233 и 3567, 185 и 415, 159 и 441, 947 и 503.
+Возвращает массив из двух чисел */
+function generatePairNumbersSum(){
+    $num1 = mt_rand(1, 999);
+    $num1 = (string) $num1;
+    $num2_0 = mt_rand(1, 9);
+    $num2_0 = (string) $num2_0;
+    
+    $num2_mas = array(
+        $num2_0 . (10 - substr($num1, strlen($num1) - 1, 1)), 
+        $num2_0 . (100 - substr($num1, strlen($num1) - 2, 2)), 
+        $num2_0 . (1000 - substr($num1, strlen($num1) - 3, 3))
+    );
+
+    $i = mt_rand(0, 2);
+    $num2 = $num2_mas[$i];  
+    return array($num1, $num2);
+};
+
+
+/* Генерирует пару "подходящих друг к другу" чисел для разности. Например  719 и 419, 853 и 533б, 7923 и 923.
+Возвращет массив из двух чисел, на первом месте большее число. */
+function generatePairNumbersDiff(){
+    $num1 = mt_rand(1, 999);
+    $num1 = (string) $num1;
+    $num2_0 = mt_rand(1, 9);
+    $num2_0 = (string) $num2_0;
+    
+    $num2_mas = array(
+        $num2_0 . substr($num1, strlen($num1) - 1, 1), 
+        $num2_0 . substr($num1, strlen($num1) - 2, 2), 
+        $num2_0 . substr($num1, strlen($num1) - 3, 3)
+    );
+
+    $i = mt_rand(0, 2);
+    $num2 = $num2_mas[$i]; 
+    $num_max = max($num1, $num2);
+    $num_min = min($num1, $num2);
+    return array($num_max, $num_min);
+};
 
