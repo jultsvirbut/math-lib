@@ -57,7 +57,7 @@ function printAdditionInColumn ($a, $b, $sum, $k_mas) {
     $k_num = implode("", $k_mas);
 
     echo '<pre>';
-    $str = str_repeat(' ', $s1_len);
+    $str = str_repeat(' ', $s1_len);
     $str = '';
     echo '<table width="50px">';
     echo "<tr><td align='right'>{$k_num}</td></tr>";
@@ -90,16 +90,20 @@ $s2 = (string) min($a, $b);
 
 $s1_len = strlen($s1);
 $s2_len = strlen($s2);
+$sum_len = strlen($sum);
 
+
+
+$s1_len = strlen($s1);
 $elements = $solutions = array();
 
-    for($i = $s1_len - 1, $j = $s2_len - 1; $j >= 0; $i--, $j--){
+    for($i = $s1_len - 1, $j = $s2_len - 1, $k = $sum_len - 1; $j >= 0; $i--, $j--, $k--){
         $lelements = array();
-        $lelements = array($s1{$i}, $s2{$j}, $sum{$i});
+        $lelements = array($s1{$i}, $s2{$j}, $sum{$k});
         if ($i == 0) $n = mt_rand(0, 1);
             else $n = mt_rand(0, 2);
         
-        /* в этих местах делать поля, для ввода цифры, со звездочкой на фоне  */
+        /* в этих местах делать поля, для ввода цифры, со звездочкой на фоне */
         $lelements[$n] = '*';
         $elements[] = $lelements;
 
@@ -114,22 +118,22 @@ $elements = $solutions = array();
                 $interim_solution = "{$stars} звездочка: {$s1{$i}} + {$s2{$j}} + $k_mas[$i] = $lsum" . " (добавляем единицу с предыдущего шага)";
             }
             if ($lsum >= 10) {
-                $solutions[$j] =  $interim_solution . " - записываем в сумму количество единиц {$sum{$i}} и запоминаем единицу для следующего старшего разряда";
+                $solutions[$j] =  $interim_solution . " - записываем в сумму количество единиц {$sum{$k}} и запоминаем единицу для следующего старшего разряда";
             } else  $solutions[$j] = $interim_solution;
 
         } else {
 
-            if ($sum{$i} >= $lelements[(1 + $n)%2] + $k_mas[$i]) {
-                $ls12 = $sum{$i} - $lelements[(1 + $n)%2] - $k_mas[$i];
+            if ($sum{$k} >= $lelements[(1 + $n)%2] + $k_mas[$i]) {
+                $ls12 = $sum{$k} - $lelements[(1 + $n)%2] - $k_mas[$i];
                 if ($k_mas[$i] == 0) {
-                    $interim_solution = "{$stars} звездочка: {$sum{$i}} - {$lelements[(1 + $n)%2]} = $ls12";    
+                    $interim_solution = "{$stars} звездочка: {$sum{$k}} - {$lelements[(1 + $n)%2]} = $ls12";    
                 } else {
-                    $interim_solution = "{$stars} звездочка: {$sum{$i}} - {$lelements[(1 + $n)%2]} - $k_mas[$i] = $ls12" . " (отнимаем единицу с предыдущего шага)";
+                    $interim_solution = "{$stars} звездочка: {$sum{$k}} - {$lelements[(1 + $n)%2]} - $k_mas[$i] = $ls12" . " (отнимаем единицу с предыдущего шага)";
                 }
 
             } else {
-                $lsum = '1' . $sum{$i};
-                $interim_solution = "{$stars} звездочка: Так как {$sum{$i}} меньше {$lelements[(1 + $n)%2]}, берем {$lsum} и запоминаем единицу для следующего старшего разряда";       
+                $lsum = '1' . $sum{$k};
+                $interim_solution = "{$stars} звездочка: Так как {$sum{$k}} меньше {$lelements[(1 + $n)%2]}, берем {$lsum} и запоминаем единицу для следующего старшего разряда";       
                 $ls12 = $lsum - $lelements[(1 + $n)%2] - $k_mas[$i];        
                 if ($k_mas[$i] == 0) {
                     $interim_solution = $interim_solution . " {$lsum} - {$lelements[(1 + $n)%2]} = {$ls12}";
@@ -155,7 +159,12 @@ $elements = $solutions = array();
     foreach ($reversed_elements as $lelements) {
         $sum_star = $sum_star . $lelements[2];
     }
-
+    if ($s1_len > $s2_len) {
+        $s1_star = substr($s1, 0, - $s2_len) . $s1_star;
+    } 
+    if ($sum_len > $s2_len) {
+        $sum_star = substr($sum, 0, - $s2_len) . $sum_star;
+    }
     return array('a' => $s1_star, 'b' => $s2_star,'sum' => $sum_star, 'solutions' => $solutions);
 }
 
@@ -165,7 +174,7 @@ $elements = $solutions = array();
 function printAdditionInColumnWithAsterisks ($a, $b, $sum) {
 
     echo '<pre>';
-    $str = str_repeat(' ', strlen($a));
+    $str = str_repeat(' ', strlen($a));
     $str = '';
     echo '<table width="50px">';
     echo "<tr><td align='right'>{$a}</td></tr>";
@@ -183,4 +192,3 @@ printAdditionInColumnWithAsterisks ($resAdditionAsterisks['a'], $resAdditionAste
 echo '<pre>';
 print_r($resAdditionAsterisks['solutions']);
 echo '</pre>';
-

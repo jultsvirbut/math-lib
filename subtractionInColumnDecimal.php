@@ -123,7 +123,7 @@ if ($a1 < $b1) {
 
 
 echo '<pre>';
-echo $a, ' - ', $b, ' = ', $a - $b;
+echo $a, ' * ', $b, ' = ', $a * $b;
 
 $num_zero = $i - $j;
 

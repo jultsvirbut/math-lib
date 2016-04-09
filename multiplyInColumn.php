@@ -1,3 +1,5 @@
+<?php
+
 function cut_zero($number) {
         
     $original_number = $number;
@@ -49,7 +51,6 @@ echo '<pre>';
 print_r($multiply);
 
 
-$str = str_repeat(' ', $m1_strlen);
 $str = '';
 echo '<table width="50px">';
 echo "<tr><td align='right'>{$m1}</td></tr>";

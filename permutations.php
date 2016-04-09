@@ -1,8 +1,9 @@
 <?php
 
-$x = array();
 
 function pc_permute($items, $perms = array()) {
+
+$x = array();
 
 	global $x;
 

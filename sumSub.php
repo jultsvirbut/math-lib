@@ -78,7 +78,7 @@ $n = 4;
 $mas_pairs = array();
 for ($i = 0; $i < 2 * $n; $i=$i +2){
 	$k = mt_rand(0, 5);
-	$pair = generatePairNumbersDiff();
+	$pair = generatePairNumbersSum();
 	$mas_pairs[$i] = intToFloat($pair[0], $k);
 	$mas_pairs[$i+1] = intToFloat($pair[1], $k);	
 }
@@ -99,7 +99,7 @@ echo '<pre>';
 $expr = $mas_pairs_shuffle[0];
 
 for ($i = 1; $i <= count($mas_pairs_shuffle) - 1; $i++){
- $expr = $expr . ' - ' . $mas_pairs_shuffle[$i];
+ $expr = $expr . ' + ' . $mas_pairs_shuffle[$i];
 }
 echo '<pre>';
 echo $expr;
@@ -110,7 +110,7 @@ echo '<pre>';
 echo $diff;
 
 for ($i = 1; $i <= count($mas_pairs_shuffle) - 1; $i++){
-$diff = $diff - $mas_pairs[$i];
+$diff = $diff + $mas_pairs[$i];
 };
 
 echo '<pre>';
@@ -120,13 +120,10 @@ echo $diff;
 
 
 
-
-
-
 $resh0 = $mas_pairs_0[0];
 
 for ($i = 1; $i < count($mas_pairs_0); $i++){
-	$resh0 = $resh0. ' - ' . $mas_pairs_0[$i];
+	$resh0 = $resh0. ' + ' . $mas_pairs_0[$i];
 	
 };
 
@@ -138,8 +135,8 @@ echo $resh0;
 $resh1 = '';
 $resh1_mas = array();
 for ($i = 0; $i < count($mas_pairs_0); $i = $i + 2){
-	$resh1_mas[$i] = $mas_pairs_0[$i] - $mas_pairs_0[$i+1];
-	$resh1 .= $resh1_mas[$i] . ' - ';
+	$resh1_mas[$i] = $mas_pairs_0[$i] + $mas_pairs_0[$i+1];
+	$resh1 .= $resh1_mas[$i] . ' + ';
 };
 
 if ($resh1{strlen($resh1)-1} == ' ') 
