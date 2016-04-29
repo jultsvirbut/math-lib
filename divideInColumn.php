@@ -33,13 +33,11 @@
     $divider = mt_rand(2,99);
     $result = floor($divident / $divider);
 
-    echo $divident . " : " . $divider . " = " . $result;
 
     $steps = divide_in_column ($divident, $divider);
     
-    echo '<pre>';
-    print_r($steps);
-    echo '</pre>';
+
+
 
 
 function print_divide_in_column($divident, $divider, $steps) {
@@ -55,26 +53,30 @@ function print_divide_in_column($divident, $divider, $steps) {
         }
     }
 
+    $steps = array_values($steps);
+
     $str = '';
     $table = '<table>';
     $table .= "<tr><td align='left'>{$divident}</td>";
     $table .= "<td align='left' style='border-bottom: 1px solid #222; border-left: 1px solid #222;'>{$divider}</td></tr>";
-    if(strlen($steps[0]['subtr']) != strlen($steps[0]['divident'])) {
-        $table .= 'blabla';
-        $steps[0]['subtr'] = '&nbsp' . $steps[0]['subtr'];
+    if (strlen($steps[0]['subtr']) != strlen($steps[0]['divident'])) {
+        $steps[0]['subtr'] = 'x' . $steps[0]['subtr'];
     }
     $table .= "<tr><td align='left' style='border-bottom: 1px solid #222;'>{$steps[0]['subtr']}{$str}</td>";
     $table .= "<td align='left'>{$result}</td></tr>";
 
-    array_shift($steps);
+    //array_shift($steps);
 
-    foreach($steps as $step){
-
-            $table .= "<tr><td width='10px' align='right'>{$str}{$step['divident']}{$str}</td></tr>";
-            $table .= "<tr><td width='10px' align='right' style='border-bottom: 1px solid #222;'>{$str}{$step['subtr']}{$str}</td></tr>";
-            $str .= ' ';    
+    for ($i = 1; $i < count($steps); $i++){
+        $x = (isset($steps[$i-1])) ? strlen($steps[$i-1]['subtr']) - strlen($steps[$i-1]['difference']) : '' ;
+        if ($x != 0 || $steps[$i-1]['difference'] == 0) {
+            $str .= 'x';
+        }
+        $table .= "<tr><td width='10px' align='left'>{$str}{$steps[$i]['divident']}</td></tr>";
+        if (strlen($steps[$i]['divident']) != strlen($steps[$i]['subtr'])) $str .= 'x';
+        $table .= "<tr><td width='10px' align='left' style='border-bottom: 1px solid #222;'>{$str}{$steps[$i]['subtr']}</td></tr>";   
     }
-    $table .= "<tr><td width='10px' align='right'>{$str}{$remainder}{$str}</td></tr>";
+    $table .= "<tr><td width='10px' align='right'>{$remainder}</td></tr>";
 
     return $table;
 }

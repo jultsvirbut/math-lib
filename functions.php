@@ -221,7 +221,7 @@
     */
     function get_some_letters($n, $register){
         $lets = get_en_letters($register);
-        for ($i = 0; $i < 3; $i++){
+        for ($i = 0; $i < $n; $i++){
             do{
                 $let[$i] = $lets[array_rand($lets)];
             } while ($let[$i] == 'o' || $let[$i] == 'l');
@@ -272,6 +272,7 @@
 
     /*
     *   Записывает все простые делители числа // 120 = 2, 2, 2, 3, 5
+    Если число простое, записывает в массив само число
     *   (int) @a - число
     *   return array
     */
@@ -296,8 +297,6 @@
     */
     function create_monomials_dec_numbers($n_monomials) {
         $mas_monomials = array();
-        $dec = [1, 10, 100];
-        
         $mas_index = array();
         $mas_index[0] = 0;
         for ($i = 0; $i < $n_monomials; $i++) {
@@ -306,9 +305,13 @@
             
             $mas_index[$i+1] = $n_numbers;
 
-            $mas_factors = array();  
+            $mas_factors = array(); 
+
+            $dec = array(1, 10, 100);
             for ($j = 0; $j < $n_numbers; $j++){
-                $mas_factors[] = mt_rand(1, 99) / $dec[array_rand($dec)];
+                $k = mt_rand(0, count($dec)-1);
+                $mas_factors[] = mt_rand(1, 99) / $dec[$k];
+                if ($dec[$k] == 1) $dec[$k] = 10;
             }
             $monomial = implode(' * ', $mas_factors);
             
@@ -326,7 +329,10 @@
     */
     function eval_elements_of_array($mas_monomials){
         foreach ($mas_monomials as $monomial) {
-            $product_monomials[] = eval('return ' . $monomial . ';');
+            $x = eval('return ' . $monomial . ';');
+            $drob = strstr($x, '.');
+            $x = round($x, strlen($drob)-1);
+            $product_monomials[] = $x;
         }
         return $product_monomials;
     }
@@ -451,7 +457,43 @@
         return $steps;
     }
 
-
+    function print_divide_in_column($divident, $divider, $steps) {
+    
+        $result = floor($divident / $divider);
+        $remainder = $steps[count($steps) - 1]['difference'];
+    
+        if ($steps[0]['result'] == 0) array_shift($steps);
+    
+        for ($i = 0; $i < count($steps); $i++){
+            if ($steps[$i]['subtr'] == 0){
+                unset($steps[$i]);
+            }
+        }
+        $steps = array_values($steps);
+    
+        $str = '';
+        $table = '<table>';
+        $table .= "<tr><td align='left'>{$divident}</td>";
+        $table .= "<td align='left' style='border-bottom: 1px solid #222; border-left: 1px solid #222;'>{$divider}</td></tr>";
+        if (strlen($steps[0]['subtr']) != strlen($steps[0]['divident'])) {
+            $steps[0]['subtr'] = 'x' . $steps[0]['subtr'];
+        }
+        $table .= "<tr><td align='left' style='border-bottom: 1px solid #222;'>{$steps[0]['subtr']}{$str}</td>";
+        $table .= "<td align='left'>{$result}</td></tr>";
+    
+        for ($i = 1; $i < count($steps); $i++){
+            $x = (isset($steps[$i-1])) ? strlen($steps[$i-1]['subtr']) - strlen($steps[$i-1]['difference']) : '' ;
+            if ($x != 0 || $steps[$i-1]['difference'] == 0) {
+                $str .= 'x';
+            }
+            $table .= "<tr><td width='10px' align='left'>{$str}{$steps[$i]['divident']}</td></tr>";
+            if (strlen($steps[$i]['divident']) != strlen($steps[$i]['subtr'])) $str .= 'x';
+            $table .= "<tr><td width='10px' align='left' style='border-bottom: 1px solid #222;'>{$str}{$steps[$i]['subtr']}</td></tr>";   
+        }
+        $table .= "<tr><td width='10px' align='right'>{$remainder}</td></tr>";
+    
+        return $table;
+    }
 
     /*
     *   Получить сумму и массив коэффициентов для запоминания при сложении двух чисел
@@ -550,7 +592,7 @@
             $lelements[$n] = '*';
             $elements[] = $lelements;
 
-            $stars = $j + 1;
+            $stars = $s2_len - $j;
 
             if ($n == 2) {
                 
@@ -571,17 +613,21 @@
                     if ($k_mas[$i] == 0) {
                         $interim_solution = "{$stars} звездочка: {$sum{$k}} - {$lelements[(1 + $n)%2]} = $ls12";    
                     } else {
-                        $interim_solution = "{$stars} звездочка: {$sum{$k}} - {$lelements[(1 + $n)%2]} - $k_mas[$i] = $ls12" . " (отнимаем единицу с предыдущего шага)";
+                        $interim_solution = "{$stars} звездочка: {$sum{$k}} - {$lelements[(1 + $n)%2]} - $k_mas[$i] = $ls12" . " (отнимаем единицу, которую запоминали на предыдущем шаге)";
                     }
 
                 } else {
                     $lsum = '1' . $sum{$k};
-                    $interim_solution = "{$stars} звездочка: Так как {$sum{$k}} меньше {$lelements[(1 + $n)%2]}, берем {$lsum} и запоминаем единицу для следующего старшего разряда";       
+                    $interim_solution = "{$stars} звездочка: ";       
                     $ls12 = $lsum - $lelements[(1 + $n)%2] - $k_mas[$i];        
                     if ($k_mas[$i] == 0) {
-                        $interim_solution = $interim_solution . " {$lsum} - {$lelements[(1 + $n)%2]} = {$ls12}";
+                        $interim_solution = $interim_solution . "Так как {$sum{$k}} меньше {$lelements[(1 + $n)%2]}, берем {$lsum} (запоминаем при этом единицу для следующего старшего разряда) и отнимаем известное слагаемое: {$lsum} - {$lelements[(1 + $n)%2]} = {$ls12}";
                     } else {
-                        $interim_solution = $interim_solution . " {$lsum} - {$lelements[(1 + $n)%2]} - $k_mas[$i] = {$ls12}" . " (отнимаем единицу с предыдущего шага)";
+                        if ($sum{$k} == 0) {
+                            $interim_solution = $interim_solution . "Так как {$sum{$k}} меньше {$lelements[(1 + $n)%2]}, берем {$lsum} (запоминаем при этом единицу для следующего старшего разряда) отнимаем известное слагаемое и единицу, которую запоминали на предыдущем шаге: {$lsum} - {$lelements[(1 + $n)%2]} - $k_mas[$i] = {$ls12}";
+                        } else {
+                            $interim_solution = $interim_solution . "Так как {$sum{$k}} - {$k_mas[$i]} (отнимаем единицу, которую запоминали на предыдущем шаге) меньше {$lelements[(1 + $n)%2]}, берем {$lsum} (запоминаем при этом единицу для следующего старшего разряда) отнимаем известное слагаемое и единицу: {$lsum} - {$lelements[(1 + $n)%2]} - $k_mas[$i] = {$ls12}";
+                        }
                     }
                 }
                 $solutions[$j] = $interim_solution;
@@ -712,4 +758,53 @@
 
         return $number;
 
+    }
+
+        /*  Автор: Kobryn Aliaksandr
+    *   Вычислить строку
+    *   (string) @string
+    *   return mixed
+    */
+    function calc_string ($string) {
+
+        return eval("return {$string};");
+
+    }
+
+
+    /*  Автор: Kobryn Aliaksandr
+    *   Нахождение НОД (наибольшего общего делителя)
+    *   (int) @a - число
+    *   (int) @b - число
+    *   return int
+    */
+    function NOD($a, $b){
+
+        if(!is_int($a) || !is_int($b)) throw new Exception('Передайте целые числа');
+
+        $gcd = gmp_gcd($a, $b);
+        return (int) gmp_strval($gcd);
+
+    }
+
+    function simplify_fraction($a,$b) {
+        
+        $x = NOD($a,$b);
+        $a = $a/$x;
+        $b = $b/$x;
+        $res = array();
+        if ($a < $b) {
+            $res[0] = 0;
+            $res[1] = $a;
+            $res[2] = $b;
+        } elseif ($a == $b) {
+            $res[0] = 1;
+            $res[1] = 0;
+            $res[2] = 0;
+        } elseif ($a > $b){
+            $res[0] = floor($a/$b);
+            $res[1] = $a - $b*$res[0];
+            $res[2] = $b;
+        }
+        return $res;
     }
