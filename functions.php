@@ -224,7 +224,7 @@
         for ($i = 0; $i < $n; $i++){
             do{
                 $let[$i] = $lets[array_rand($lets)];
-            } while ($let[$i] == 'o' || $let[$i] == 'l');
+            } while ($let[$i] == 'o' || $let[$i] == 'l' || $let[$i] == 'e' || $let[$i] == 'i');
             $lets = array_diff($lets, array($let[$i]));
         }
         return $let;
@@ -283,7 +283,7 @@
             if ($n % $d == 0) {
                 $ans[] = $d;
                 $n = $n / $d;
-            } else $d = $d + 1;
+            } else $d++;
         }
         if ($n > 1) $ans[] = $n;
         return $ans;
@@ -431,17 +431,78 @@
     *   (int) @divider - делитель
     *   return array
     */
-    function divide_in_column ($divident, $divider) {
+
+    function divide_in_column ($divident, $divider, $accuracy = 4) {
 
         $divident = (string) $divident;
         $divider = (string) $divider;
-        $div_length = strlen($divider);
+
+        $divident_len = strlen(str_replace('.', '', $divident));
+        $n = $divident_len + $accuracy;
     
         $steps = array ();
 
+        $ldivider = $divider;
+        $result0 = '';
+
+        if (strpos($divident,'.')) {
+            $int_part_divident = substr($divident,0,strpos($divident,'.'));
+            $frac_part_divident = substr($divident,strpos($divident,'.')+1,strlen($divident)+1);
+        } else {
+            $int_part_divident = $divident;
+            $frac_part_divident = 0;
+        }
+
+        if ($divident < $divider) {
+            $result0 .= '0.';  
+            $divident = str_replace('.', '', $divident); 
+            $ldivident = isset($divident{strlen($int_part_divident)}) ? $int_part_divident . $divident{strlen($int_part_divident)} : $int_part_divident . '0' ; 
+            $i_start = strlen($ldivident);  
+        } else {
+            $i_start = strlen($divider);
+            $ldivident = substr($divident, 0, $i_start);
+        }
+        
+        for ($i = $i_start; $i < $n; $i++) {
+            $lresult = '';
+
+            $lresult .= floor($ldivident / $ldivider);
+            
+            if (isset($divident{$i}) && $divident{$i} == '.') {
+                $i ++;
+                $lresult .= '.';  
+            }
+
+            $lsubtr = $lresult * $ldivider;
+            $ldifference = $ldivident - $lsubtr;
+
+            if ($i == $divident_len && $frac_part_divident == 0) {
+                    $lresult .= '.' ; 
+            }
+
+            $steps[] = array ('divident' => $ldivident, 'divider' => $ldivider, 'result' => $lresult, 'subtr' => $lsubtr, 'difference' => $ldifference);
+            
+            if ($i >= $divident_len && $ldifference == 0) break;
+
+            if (isset($divident{$i})) {    
+                $ldivident = ($ldifference != 0) ? $ldifference . $divident{$i} : $divident{$i} ;
+            } else $ldivident = $ldifference . '0';
+        }
+
+        $steps[0]['result'] = $result0 . $steps[0]['result'];
+        $steps[count($steps)-1]['result'] = str_replace('.', '', $steps[count($steps)-1]['result']);
+        
+        return $steps;
+    }
+
+    function divide_in_column_with_remainder ($divident, $divider) {
+        $divident = (string) $divident;
+        $divider = (string) $divider;
+        $div_length = strlen($divider);
+        
+        $steps = array ();
         $ldivident = substr($divident, 0, $div_length);
         $ldivider = $divider;
-
         for($i = $div_length; $i < strlen($divident) + 1; $i++) {
             $lresult = floor($ldivident / $ldivider);
             $lsubtr = $lresult * $ldivider;
@@ -451,15 +512,22 @@
                         
             if ($i < strlen($divident)) {
                 $ldivident = ($ldifference != 0) ? $ldifference . $divident{$i} : $divident{$i} ;
-                //$ldivident = $ldifference . $divident{$i};
             }
         }
         return $steps;
     }
 
+
     function print_divide_in_column($divident, $divider, $steps) {
-    
-        $result = floor($divident / $divider);
+        
+        $full_res = '';
+        foreach ($steps as $step) {
+            $full_res .= $step['result'];
+        }
+        $result = $full_res;
+        
+        if ($result{0} == 0 && $result{1} != '.') $result = substr($result, 1, strlen($result));
+        
         $remainder = $steps[count($steps) - 1]['difference'];
     
         if ($steps[0]['result'] == 0) array_shift($steps);
@@ -470,10 +538,13 @@
             }
         }
         $steps = array_values($steps);
-    
+
+        if ((strlen($divident) <= strlen($divider)) && ($divident < $divider)) $divident_in_column = $steps[0]['divident']; 
+            else $divident_in_column = $divident;
+
         $str = '';
         $table = '<table>';
-        $table .= "<tr><td align='left'>{$divident}</td>";
+        $table .= "<tr><td align='left'>{$divident_in_column}</td>";
         $table .= "<td align='left' style='border-bottom: 1px solid #222; border-left: 1px solid #222;'>{$divider}</td></tr>";
         if (strlen($steps[0]['subtr']) != strlen($steps[0]['divident'])) {
             $steps[0]['subtr'] = 'x' . $steps[0]['subtr'];
@@ -490,7 +561,7 @@
             if (strlen($steps[$i]['divident']) != strlen($steps[$i]['subtr'])) $str .= 'x';
             $table .= "<tr><td width='10px' align='left' style='border-bottom: 1px solid #222;'>{$str}{$steps[$i]['subtr']}</td></tr>";   
         }
-        $table .= "<tr><td width='10px' align='right'>{$remainder}</td></tr>";
+        $table .= "<tr><td width='10px' align='right'>{$remainder}</td></tr></table>";
     
         return $table;
     }
@@ -780,12 +851,16 @@
     */
     function NOD($a, $b){
 
+        $a = (int) $a;
+        $b = (int) $b;
+
         if(!is_int($a) || !is_int($b)) throw new Exception('Передайте целые числа');
 
         $gcd = gmp_gcd($a, $b);
         return (int) gmp_strval($gcd);
 
     }
+
 
     function simplify_fraction($a,$b) {
         
@@ -808,3 +883,52 @@
         }
         return $res;
     }
+
+
+    function length_frac_part ($a){
+        if (strpos($a,'.')) {
+            $int_part = substr($a,0,strpos($a,'.'));
+            $frac_part = substr($a,strpos($a,'.')+1, strlen($a)+1);
+        } else {
+            $int_part = $a;
+            $frac_part = 0;
+        }
+    $frac_part_len = ($frac_part == 0) ? 0 : strlen($frac_part) ;
+    return $frac_part_len;
+    }
+
+
+    function simplify_fraction_show($a){
+        if (($a[0] != 0) && ($a[1] != 0)) $x = "$a[0] $a[1]/$a[2]";
+        if ($a[0] == 0){
+            if ($a[1] == 0) $x = "0";
+            else $x = "$a[1]/$a[2]";
+        }
+        if ($a[1] == 0) $x = "$a[0]";
+    return $x;
+    }
+
+
+    function NOK ($a,$b){
+        $m = max($a,$b);
+        $n = min($a,$b);
+        
+        if ($m%$n == 0) return $m;
+        
+        $m_f = factor($m);
+        $n_f = factor($n);
+        
+        $diff = array();
+    
+        array_map(function($elem) use (&$m_f, &$diff){
+            $find_index = array_search($elem, $m_f);
+            if($find_index !== false)
+                unset($m_f[$find_index]);
+            else
+                $diff[] = $elem;
+        }, $n_f);
+        
+    
+        $x = array_product($diff);
+        return $m * $x;
+    }   
